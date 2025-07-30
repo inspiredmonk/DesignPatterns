@@ -1,4 +1,6 @@
-﻿namespace FactoryPattern
+﻿using Microsoft.VisualBasic;
+
+namespace FactoryPattern
 {
     class Program
     {
@@ -18,10 +20,161 @@
             //PDfGenerator pDfGenerator = new PDfGenerator(emailNotification);
             //pDfGenerator.Generate();
 
-            Restaurant restaurant = new Restaurant();
-            restaurant.Order("AdrakChai", "Burger");
+            //Restaurant restaurant = new Restaurant();
+            //restaurant.Order("AdrakChai", "Burger");
+
+            FurnitureShop furnitureShop = new FurnitureShop();
+            furnitureShop.PurchaseChairOnly("Victorian");
+            furnitureShop.PurchaseCombo("Modern");
         }
     }
+
+    #region AbstractFactory Example
+    //Client Code
+    public class FurnitureShop
+    {
+        private IFurnitureCombo _furnitureShop;
+        public FurnitureShop()
+        {
+            
+        }
+
+        public void PurchaseChairOnly(string variantType)
+        {
+            _furnitureShop = FurnitureSimulator.Simulator(variantType);
+            _furnitureShop.chairs().GetChair();
+        }
+
+        public void PurchaseSofaOnly(string variantType)
+        {
+            _furnitureShop = FurnitureSimulator.Simulator(variantType);
+            _furnitureShop.sofas().GetSofa();
+        }
+
+        public void PurchaseCombo(string variantType)
+        {
+            _furnitureShop = FurnitureSimulator.Simulator(variantType);
+            _furnitureShop.chairs().GetChair();
+            _furnitureShop.sofas().GetSofa();
+        }
+    }
+
+    public static class FurnitureSimulator
+    {
+        public static IFurnitureCombo Simulator(string variantType)
+        {
+            return variantType switch
+            {
+                "Modern" => new ModernFurniture(),
+                "Victorian" => new VictorianFurniture(),
+                "ArtDeco" => new ArtDecoFurniture(),
+                _ => throw new NotSupportedException($"variantType type '{variantType}' is not supported.")
+            };
+        }
+        //public static IChair ChairSimulator(string chairType)
+        //{
+        //    return chairType switch
+        //    {
+        //        "Modern" => new ModernChairFactory().CreateChair(),
+        //        "Victorian" => new VictorianChairFactory().CreateChair(),
+        //        "ArtDeco" => new ArtDecoChairFactory().CreateChair(),
+        //        _ => throw new NotSupportedException($"chairType type '{chairType}' is not supported.")
+        //    };
+        //}
+    }
+
+    //Product
+    public interface IChair
+    {
+        void GetChair();
+    }
+    public interface ISofa
+    {
+        void GetSofa();
+    }
+    public interface IFurnitureCombo
+    {
+        IChair chairs();
+        ISofa sofas();
+    }
+
+    //Product Concret
+    public class ModernFurniture: IFurnitureCombo
+    {
+        public IChair chairs()
+        {
+            return new ModernChair();
+        }
+        public ISofa sofas()
+        {
+            return new ModernSofa();
+        }
+    }
+    public class VictorianFurniture : IFurnitureCombo
+    {
+        public IChair chairs()
+        {
+            return new VictorianChair();
+        }
+        public ISofa sofas()
+        {
+            return new VictorianSofa();
+        }
+    }
+    public class ArtDecoFurniture : IFurnitureCombo
+    {
+        public IChair chairs()
+        {
+            return new ArtDecoChair();
+        }
+        public ISofa sofas()
+        {
+            return new ArtDecoSofa();
+        }
+    }
+
+    public class ModernChair : IChair {
+        public void GetChair() {
+            Console.WriteLine("Modern chair is avaialble");
+        }
+    }
+    public class VictorianChair : IChair
+    {
+        public void GetChair()
+        {
+            Console.WriteLine("Victorian chair is avaialble");
+        }
+    }
+    public class ArtDecoChair : IChair
+    {
+        public void GetChair()
+        {
+            Console.WriteLine("ArtDeco chair is avaialble");
+        }
+    }
+    public class ModernSofa : ISofa
+    {
+        public void GetSofa()
+        {
+            Console.WriteLine("Modern Sofa is avaialble");
+        }
+    }
+    public class VictorianSofa : ISofa
+    {
+        public void GetSofa()
+        {
+            Console.WriteLine("Victorian Sofa is avaialble");
+        }
+    }
+    public class ArtDecoSofa : ISofa
+    {
+        public void GetSofa()
+        {
+            Console.WriteLine("ArtDeco Sofa is avaialble");
+        }
+    }
+    #endregion
+
 
     #region Restaurant
     //Client Code
